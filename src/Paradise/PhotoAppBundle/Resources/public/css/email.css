@@ -1,0 +1,112 @@
+#closeEmail
+{
+    text-shadow: 0 4px 4px rgba(251, 210, 120, 0.7) !important;
+    float: right;
+    text-align: center;
+    margin: 0.5em 0.7em 0 0 !important;
+    font-size: 11px !important;
+    font-weight: bold;
+    color: brown;
+}
+
+#closeEmail:hover
+{
+    cursor: pointer;
+}
+
+#emailError
+{
+    color: #800000;
+}
+
+#emailHeader
+{
+    color: #800000;
+    padding: 0 0 0 1em;
+    margin: 0.6em 0 0 0;
+    display: inline-block;
+    font-family: 'lucida grande',tahoma,verdana,arial,sans-serif;
+    font-size: 13px;
+}
+
+.clearFields:hover
+{
+    cursor: pointer;
+}
+
+.clearFields
+{
+    color: #800000;
+    padding: 0 0 0 1em;
+    margin: 0.6em 0 0 0;
+    display: inline-block;
+    font-family: 'lucida grande',tahoma,verdana,arial,sans-serif;
+    font-size: 13px;
+}
+
+#lblSending
+{
+    font-family: 'lucida grande',tahoma,verdana,arial,sans-serif;
+    font-weight: bold;
+}
+
+#textBody
+{
+    margin-left: 40px;
+    height: 180px;
+    border: 1px solid #C2C2C2;
+    border-radius: 4px 4px 4px 4px;
+    box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.06) inset;
+}
+
+.email
+{
+    width: 270px;
+    height: 28px;
+    margin: 0 0 0 3em;
+}
+
+.email
+{
+    width: 270px;
+    height: 28px;
+    margin: 0 0 0 3em;
+}
+
+#bttnEmail
+{
+    font-size:11px;
+    font-family:Tahoma,sans-serif;
+    text-align:left;
+    color:#FFFFFF;
+    width:75px;
+    height:22px;
+    background-color: #2878C0;
+    border-style: solid;
+    border-color: #2878C0 #508CC0 #2878C0 #1858B8;
+    border-width:1px 6px 1px 6px;
+}
+
+#bttnEmailCancel
+{
+    font-size:11px;
+    font-family:Tahoma,sans-serif;
+    text-align:center;
+    color: #800000;
+    width:75px;
+    height:28px;
+    background-color: #FBD278;
+    border-style: solid;
+}
+
+#bttnEmailCancel:hover
+{
+    cursor: pointer;
+}
+
+#bttnEmail:hover
+{
+    background-color: #2888D8;
+    border-color: #2888D8 #58A4E0 #2888D8 #1864D0;
+    cursor: pointer;
+}

@@ -1,0 +1,149 @@
+                <div class="img">
+                    <input type="hidden" value="{{ ParadiseUserID }}" id="user_id"/>  
+                    <div class="img-container">
+                        <div id="rating-conatiner">
+                            <div id="{{ data.id }}" data-score="0" class="photo-rating"></div>
+                            <div class="clear"></div> 
+                        </div>
+
+                        <img src="data:image/jpg;base64,{{ render }}"/>
+                        <input type="hidden" value="{{ data.id }}" id="photo_id"/>
+                    </div>
+                    
+                    <div class="photo-nav">
+                        <div class="facebook-option">
+                            
+                           <div id="likeContainer"> 
+                           {% if validateLike is not empty %}
+                              <div class="pluginButton fb-like-active">                                        
+                                  <a href="javascript: void(0)" onclick="deleteLike()"><span class="fb-like-icons like_active"></span></a>
+                                  <span class="context"> Like </span>
+                              </div>
+                           {% else %}
+                               <div class="pluginButton likePhoto" id="likePhoto">
+                                   <a href="javascript: void(0)" onclick="likePhoto()"><span class="fb-like-icons like_thumb"></span></a>
+                                   <span class="context">Like</span>
+                               </div>
+                           {% endif %}
+                           </div> 
+                                   
+                                   
+                            <div class="pluginButton">
+                                <span class="fb-like-icons like_send"></span>
+                                <span class="context">
+                                    <a onClick="window.open('http://www.facebook.com/sharer.php?s=100&amp;p[title]={{ "Photo Application"|url_encode }}&amp;p[summary]={{ data.photoDesc|url_encode }}&amp;p[url]={{ app.request.getSchemeAndHttpHost()|url_encode }}&amp;&p[images][0]={{ 'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcREEksfR_GTgbefW52AdI2zjARkeXHjj1igBdBVt_b4ABKGXuFkzvXpAEss' |url_encode }}', 'sharer', 'toolbar=0,status=0,width=548,height=325');" target="_parent" href="javascript: void(0)">Share</a>
+                                </span>
+                            </div>
+
+                            <span class="like_counter">{{ countLike }}</span>
+                            
+                        </div><!--left nav-->
+                        
+                        <div class="other-option">
+                             <div class="icon print"></div>
+                             <a download="{{ data.filename }}.{{ data.filetype }}" href="data:application/stream;base64,{{ render }}"><div class="icon download"></div></a>
+                             <a class="emailForm fancybox.iframe" href="/renderEmail?photoID={{ data.id }}" id={{ data.id }}" title="Email this photo"><div class="icon email"></div></a>
+                        </div>
+                    </div>
+                <div class="clear"></div>   
+                </div>
+               
+                {% if data.photoDesc is not empty %}
+                    <div class="photoDesc">{{ data.photoDesc }}</div>
+                {% endif %}
+
+                <div style="padding:20px; font-size:12px; margin-top:10px;">
+                    <div style="float:left; text-align:right; width:25%; margin-right:5px;  border-right: 1px solid #CCCCCC; padding-right:15px;">
+                        <b>Uploaded:</b> {{ data.datepost | date("d M, Y")}}<br />
+                        <b>By:</b> John Smith
+                    </div>   
+                    
+                    <div id="tagsContainer">
+                        <input type="text" id="photo-tags" value="" placeholder="add tags...">
+                        <textarea id="photoTags">{{ photoTags }}</textarea>
+                        <textarea id="selectTags">{{ selectTags }}</textarea>
+                    </div>    
+                        
+                <div class="clear"></div>           
+                </div>
+                
+                <div id="commentPanel">
+                    <div class="total_comments">
+                        {% if comments|length > 1 %}
+                           {{ comments|length }} comments
+                        {% elseif comments|length == 1 %}  
+                           {{ comments|length }} comment
+                        {% elseif comments|length == 0 %}  
+                            0 comment
+                        {% endif %}
+                    </div>
+                    
+                    <div class="composer">
+                        <form id="addComment" method="POST">
+                            <img alt="" src="{{ asset('bundles/paradisephotoapp/images/avatar-default.jpg') }}" class="_s0 profilePic _rw img" width="50" height="50">
+                            <textarea id="add_comment" placeholder="Add a comment..."></textarea>
+                            <input type="submit" value="Comment" id="submit_comment" />
+                        </form>
+                        <div class="clear"></div>    
+                    </div><!--#composer-->
+                    
+                    <div id="newComment"></div>
+                    
+                   {% for comment in comments %}
+                    <div class="commentMsg" id="fm_{{ comment.id }}">
+                        {%  if comment.userId == ParadiseUserID %}
+                            <a href="javascript:void(0)" onclick="deleteComment();return false;"><div class="deteleComment fb-delete pre-delete" id="{{ comment.id }}"></div></a>
+                        {% endif %}
+                            
+                        <img class="img" alt="" src="{{ asset('bundles/paradisephotoapp/images/avatar-default.jpg') }}"  width="50" height="50">
+                        <ul class="comment_info">
+                            <li class="profileName">John Doe</li>
+                            <li class="datepost">{{ comment.datepost | date("d M, Y") }}</li>
+                        </ul>    
+                        <span>{{ comment.comment | raw }}</span>
+                        <div class="clear"></div>
+                    </div><!--#feedback-->
+                    {% endfor %}
+                </div><!--#commentPanel-->
+                
+              
+<script src="{{ asset('bundles/paradisephotoapp/js/details-page.js') }}" type="text/javascript"></script>    
+<script src="{{ asset('bundles/paradisephotoapp/js/jquery.fancybox.js') }}" type="text/javascript"></script> 
+<script>
+    //PHOTO RATING
+    var assets = "{{ asset('bundles/paradisephotoapp/js/js-rating/img') }}";
+    $.fn.raty.defaults.path = assets;
+    $('.photo-rating').raty({
+      click: function(score) {
+        alert('ID: ' + $(this).attr('id') + "\nscore: " + score);
+      }
+    });
+    
+    $('.emailForm').fancybox({
+        padding     : 0,
+        width       : '390px',
+        height      : '500px',
+        autoSize    : false,
+        afterClose  : function()
+        {
+            console.log("Cancel clicked");
+            $.ajax({
+                url: "/deleteFolder",
+                type: "POST",
+                success: function(msg)
+                {
+                    console.log(msg);
+                },
+                error:function(msg)
+                {
+                    alert("Failed: " + msg.status + ": " + msg.statusText);
+                }
+            });
+        },
+        fitToView   : false,
+        openEffect  : 'none',
+        closeEffect : 'none',
+        type        : 'iframe'
+    });
+</script>
+    

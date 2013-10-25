@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <!--
+<parameters>
+<parameter key="paradise_photo_app.example.class">Paradise\PhotoAppBundle\Example</parameter>
+</parameters>
+
+<services>
+<service id="paradise_photo_app.example" class="%paradise_photo_app.example.class%">
+<argument type="service" id="service_id" />
+<argument>plain_value</argument>
+<argument>%parameter_name%</argument>
+</service>
+</services>
+-->
+    <parameters>
+        <parameter key="photoapp.controller.tags.class">Paradise\PhotoAppBundle\Controller\TagsController</parameter>
+    </parameters>
+
+    <services>
+        <service id="photoapp.tags.controller" class="%photoapp.controller.tags.class%" />
+    </services>
+</container>

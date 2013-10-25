@@ -1,0 +1,5 @@
+paradise_photo_app:
+    resource: "@ParadisePhotoAppBundle/Controller/"
+    type:     annotation
+    prefix:   /
+

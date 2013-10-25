@@ -1,0 +1,150 @@
+        <div class="row-fluid">
+            <div class="span12">
+                <div id="photoContainer">
+
+                   {% for photo in data %}
+                    <div class="element items box" id="id{{ photo.id }}">
+                        <div class="mosaic-block bar">
+                            <div class="mosaic-overlay-top">
+                                <a onClick="window.open('http://www.facebook.com/sharer.php?s=100&amp;p[title]={{ "Photo Application"|url_encode }}&amp;p[summary]={{ photo.photo_desc|url_encode }}&amp;p[url]={{ app.request.getSchemeAndHttpHost()|url_encode }}&amp;&p[images][0]={{ 'https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcREEksfR_GTgbefW52AdI2zjARkeXHjj1igBdBVt_b4ABKGXuFkzvXpAEss' |url_encode }}', 'sharer', 'toolbar=0,status=0,width=548,height=325');" target="_parent" href="javascript: void(0)" title="Share this to your facebook wall"><div class="icons facebook"></div></a>
+                                <a class="emailForm fancybox.iframe" href="/renderEmail?photoID={{ photo.id }}" id="{{ photo.id }}" title="Email this photo"><div class="icons email"></div></a>
+                                <a href="javascript: void(0)" title="Add this your favorites"><div class="icons favorite" id="favorites_{{ photo.id }}"></div></a>
+                                <a class="fancybox fancybox.iframe" href="/reportPhoto?photoID={{ photo.id }}&userID={{ ParadiseUserID }}" id={{ photo.id }} title="Tag this photo as inappropriate"><div class="icons right inappropriate"></div></a>
+                            </div> 
+
+                            <a href="{{ path('photo_details', { 'id': photo.id }) }}" id="detailsPage"><img src="data:image/jpg;base64,{{ render['id'][photo.id] }}"/></a>
+
+                            <div class="mosaic-overlay {% if photo.photo_desc is empty %}no-comment{% endif %}">
+                                {% if photo.photo_desc is not empty %}
+                                    <div class="desc">{{ photo.photo_desc|length > 70 ? photo.photo_desc|slice(0, 70) ~ '...' : photo.photo_desc }}</div>
+                                {% endif %}
+                                <div class="icons comments">{{ comments['id'][photo.id] }}</div>
+                            </div>
+                        </div>
+                    </div>
+                   {% endfor %}
+
+                </div><!--#photoContainer-->
+            </div><!--.span12-->
+        </div><!--.row-fluid-->
+            
+        <nav id="page_nav">{{ knp_pagination_render(data) }}</nav>    
+
+{% block javascripts %}
+  <script src="{{ asset('bundles/paradisephotoapp/js/jquery.isotope.js') }}" type="text/javascript"></script> 
+  <script src="{{ asset('bundles/paradisephotoapp/js/jquery.infinitescroll.min.js') }}" type="text/javascript"></script> 
+  <script src="{{ asset('bundles/paradisephotoapp/js/mosaic.1.0.1.js') }}" type="text/javascript"></script> 
+  <script src="{{ asset('bundles/paradisephotoapp/js/jquery.fancybox.js') }}" type="text/javascript"></script> 
+  <script>
+    $('.bar').mosaic({animation:'slide'});
+
+    var $container = $('#photoContainer');
+      
+    $container.isotope({
+        itemSelector : '.items',
+        animationEngine : $.browser.opera ? 'jquery' : 'best-available'
+    });
+
+    $container.infinitescroll({
+            navSelector: '#page_nav', // selector for the paged navigation 
+            nextSelector: '#page_nav a', // selector for the NEXT link (to page 2)
+            itemSelector: '.items', // selector for all items you'll retrieve
+            loading: {
+                finishedMsg: 'No more photos to load.',
+                img: 'http://i.imgur.com/qkKy8.gif'
+            },
+            animationEngine: 'best-available',
+            animationOptions : {
+                duration: 750,
+                easing: 'linear',
+                queue: false
+            },   
+            bufferPx : 100,
+            errorCallback: function(){
+                $('#page-nav').css({display: 'none'});
+            }
+
+        },function(newElements) {
+            $('.bar').mosaic({animation:'slide'});
+            
+            var $newElems = $(newElements);
+            
+            $newElems.imagesLoaded(function(){
+                
+                $newElems.animate({ opacity: 1 });
+                
+                $container.isotope('appended', $newElems );
+            });
+        }
+    );
+    
+    //TAG AS INAPPROPRIATE 
+    $('.fancybox').fancybox({
+        padding     : 0,
+        width       : '280px', 
+        height      : '350px', 
+        autoSize    : false, 
+        afterClose  : function() {
+           var id= $(this.element).attr("id");
+           $.ajax({
+                 type: "GET",
+                 url: '/validate/status/',
+                 data: 'photoID='+id,
+                 success: function(res){
+                     if(res === 'TRUE'){
+                         $container.isotope('remove', $("#id"+id));
+                         $container.isotope('reLayout');
+                     }
+                 }
+           });
+        },
+        fitToView   : false, 
+        openEffect  : 'none', 
+        closeEffect : 'none', 
+        type        : 'iframe'
+    });
+    
+    $('.emailForm').fancybox({
+        padding     : 0,
+        width       : '390px',
+        height      : '500px',
+        autoSize    : false,
+        afterClose  : function()
+        {
+            console.log("Cancel clicked");
+            $.ajax({
+                url: "/deleteFolder",
+                type: "POST",
+                success: function(msg)
+                {
+                    console.log(msg);
+                },
+                error:function(msg)
+                {
+                    alert("Failed: " + msg.status + ": " + msg.statusText);
+                }
+            });
+        },
+        fitToView   : false,
+        openEffect  : 'none',
+        closeEffect : 'none',
+        type        : 'iframe'
+    });
+    
+    //ADD TO FAVORITES
+    $("div[id^=favorites_]").click(function () {
+        photoID = $(this).attr('id').split("_"); 
+        userID = $('#userID').val();
+        $.ajax({
+            type: "GET",
+            url: '/favorites/',
+            data: 'photoID='+photoID[1]+'&userID='+userID,
+            error: function() {  },
+            success: function(){}
+        });
+    });
+    
+  </script>
+{% endblock %}
+</body>
+</html>

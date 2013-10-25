@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="Paradise\PhotoAppBundle\Entity\Tags" table="tags">
+    <id name="id" type="integer" column="id"/>
+    <field name="tagrefId" type="integer" column="tagref_id" precision="0" scale="0" nullable="false"/>
+    <field name="userId" type="integer" column="user_id" precision="0" scale="0" nullable="false"/>
+    <field name="datepost" type="datetime" column="datepost" precision="0" scale="0" nullable="false"/>
+    <one-to-one field="tagtype" target-entity="Paradise\PhotoAppBundle\Entity\Tagtype">
+      <join-columns>
+        <join-column name="tagtype_id" referenced-column-name="id" nullable="1"/>
+      </join-columns>
+    </one-to-one>
+    <one-to-one field="photo" target-entity="Paradise\PhotoAppBundle\Entity\Photos">
+      <join-columns>
+        <join-column name="photo_id" referenced-column-name="id" nullable="1"/>
+      </join-columns>
+    </one-to-one>
+  </entity>
+</doctrine-mapping>

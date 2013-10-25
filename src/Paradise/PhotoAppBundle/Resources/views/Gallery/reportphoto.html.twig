@@ -1,0 +1,63 @@
+<div style="max-height:200px; max-width:260px; overflow:hidden; margin-bottom:5px;">
+    <img src="data:image/jpg;base64,{{ render }}"/>
+</div>    
+
+<div id="report-photo">
+    <form>
+        <input type="hidden" id="userID" value="{{ userID }}">
+        <input type="hidden" id="photoID" value="{{ photo.id }}">
+        <textarea id="reason" style="width:260px; height:80px; margin-bottom:5px; font: 11px 'lucida grande',tahoma,verdana,arial,sans-serif; color:#333;" placeholder="enter reason here..."></textarea><br />
+        <input type="submit" value="Report" />
+        <input type="reset" value="Cancel" onclick="parent.jQuery.fancybox.close();"/>
+    </form>
+</div>
+
+<style>
+.required{
+    border:1px solid #ff0000;
+}   
+.msg{
+    background: none repeat scroll 0 0 #FFD1D1;
+    border-bottom: 1px solid #F8ACAC;
+    border-top: 1px solid #F8ACAC;
+    font-size: 14px;
+    padding: 10px 15px;
+    color: #333;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 12px;
+    line-height: 1.5;
+}    
+</style>
+
+<script src="{{ asset('bundles/paradisephotoapp/js/jquery-1.7.1.min.js') }}" type="text/javascript"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#report-photo').submit(function(e) {
+        e.preventDefault();
+        
+        userID = $('#userID').val();
+        photoID = $('#photoID').val();
+        reason = $('#reason').val();
+        
+        if(reason.length === 0)
+        {    
+           $('#reason').addClass('required');
+        }
+        else
+        {    
+             $.ajax({
+                type: "GET",
+                url: '/inappropriate/',
+                data: 'userID='+userID+'&photoID='+photoID+'&reason='+reason,
+                error: function() {  },
+                success: function(){
+                   $('#report-photo').html('<div class="msg">Photo is reported and will not be available until Administrators approval.</div>');
+                }
+            });
+        
+        }
+        return false;
+        
+    });
+});
+</script>
